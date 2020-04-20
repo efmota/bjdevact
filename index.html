@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Bondi Junction Development Activity</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    font-size: 14px;
+  }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  li{
+    padding:3px 0 ;
+  }
+  #panel{
+    background: white;
+    width: 400px;
+    border: 1px solid rgba(0,0,0,0.05);
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    box-shadow: 0 0 4px 0 rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.5);
+  }
+  h4{
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    margin: 0;
+    padding: 16px;
+  }
+  ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 16px;
+
+  }
+  ul span{
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin-right: 8px;
+    border-radius: 50%;
+  }
+
+dd{
+	margin-left: 0;
+	margin-bottom: 8px;
+	font-weight: bold;
+}
+dl{
+	bottom-margin: 0;
+}
+.mapboxgl-popup-content{
+	font-size: 14px;
+	color: rgba(0,0,0,0.5);
+	min-width: 250px;
+	max-width: 400px;
+	box-shadow: 0 0 4px 0 rgba(0,0,0,0.1);
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+  <div id='panel'>
+    <h4>FILTER STAGE</h4>
+<ul>
+  <li><span style='background:#8df2cb;'></span>Under Assessment</li>
+  <li><span style='background:#f4eea4;'></span>Approved</li>
+  <li><span style='background:#95f084;'></span>Under Construction</li>
+  <ul/>
+  <div/>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiZnJhbmNpc2NvbW90YSIsImEiOiJjamMxZnJ1OXcwMWttMzNyMm1xNDBvYWQzIn0.Y3X_aeNrL7vHsvibRQtyag';
+    var map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: 'mapbox://styles/franciscomota/ck670qh250n8p1iqrpmvd17iw', // stylesheet location
+        center: [151.24723, -33.89275], // starting position [lng, lat]
+        zoom: 16, // starting zoom
+				minZoom:15,
+				maxZoom:18
+    });
+		var nav = new mapboxgl.NavigationControl();
+		map.addControl(nav, 'top-left');
+		
+		map.on('mousemove',function(event){
+			//console.log(event);
+			if(map.loaded()){ //to prevent an error from trying to display the pointer before the layers are loaded
+				var features = map.queryRenderedFeatures(event.point,{
+						layers: ['approved-57zhk6','underassessment-0zhf9g','undercontruction-a08usx (1)']
+					});
+					map.getCanvas().style.cursor = (features.length) ? 'pointer' : ''; //simplified if statement
+			}
+		/*	if (features.length){
+				map.getCanvas().style.cursor = 'pointer';
+				} else {
+					map.getCanvas().style.cursor = '';
+			}*/
+
+		});
+
+		map.on('click', function(event){
+			//console.log('Mouse Clicked');
+			//console.log(event.point);
+
+			var geometry = event.point;
+			var parameters = {
+				layers: ['approved-57zhk6','underassessment-0zhf9g','undercontruction-a08usx (1)']
+			}
+			var features = map.queryRenderedFeatures(geometry, parameters);
+			//console.log(features);
+			//console.log(features.length + 'features');
+			var development = features[0];
+			console.log(development);
+
+			if (features.length){
+				var Height = development.properties.Height || '—';
+				var id = development.properties.id || '—';
+				console.log(Height, id);
+
+				var popup = new mapboxgl.Popup()
+				.setLngLat(event.lngLat) //location of pop up to mouse click lng and lat
+				.setHTML('<dl>' +
+					'<dt>Height: </dt>' +
+					'<dd>' + Height + '</dd>' +
+					'<dt>id: </dt>' +
+					'<dd>' + id + '</dd>' +
+					'</dl>')
+				.addTo(map);
+			}
+		});
+</script>
+
+</body>
+</html>
