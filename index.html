@@ -87,7 +87,7 @@ dl{
     });
 		var nav = new mapboxgl.NavigationControl();
 		map.addControl(nav, 'top-left');
-		
+
 		map.on('mousemove',function(event){
 			//console.log(event);
 			if(map.loaded()){ //to prevent an error from trying to display the pointer before the layers are loaded
@@ -105,9 +105,6 @@ dl{
 		});
 
 		map.on('click', function(event){
-			//console.log('Mouse Clicked');
-			//console.log(event.point);
-
 			var geometry = event.point;
 			var parameters = {
 				layers: ['approved-57zhk6','underassessment-0zhf9g','undercontruction-a08usx (1)']
